@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Health Quiz</title>
+    <style>
+        body {
+            font-family: 'Lora', serif;
+            background: linear-gradient(135deg, #ff9e7d, #ff6b6b, #8e44ad);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ccircle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.5"/%3E%3C/svg%3E') repeat;
+            animation: twinkle 5s infinite alternate;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0.5; }
+        }
+        #quizContainer {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        .question-box {
+            position: absolute;
+            background: linear-gradient(135deg, #fff5e6, #ffebee);
+            border-radius: 25px;
+            padding: 40px;
+            width: 550px;
+            max-width: 90%;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1), 0 0 20px rgba(255, 107, 107, 0.3);
+            transform: translateX(120%);
+            transition: transform 0.6s ease-in-out, box-shadow 0.3s;
+            text-align: center;
+            border: 2px solid #ff9f43;
+        }
+        .question-box.active {
+            transform: translateX(0);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 0 25px rgba(255, 159, 67, 0.4);
+        }
+        .question-box h2 {
+            color: #ff6b6b;
+            margin-bottom: 25px;
+            font-size: 30px;
+            font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(255, 107, 107, 0.3);
+            background: linear-gradient(45deg, #ff9f43, #8e44ad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .question-box label {
+            display: block;
+            margin: 20px 0;
+            font-size: 22px;
+            color: #2c3e50;
+            cursor: pointer;
+            padding: 15px 25px;
+            background: linear-gradient(90deg, #98FF98, #ff9f43);
+            border-radius: 20px;
+            transition: transform 0.4s, background 0.4s, box-shadow 0.4s;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            font-family: 'Roboto', sans-serif;
+        }
+        .question-box label:hover {
+            background: linear-gradient(90deg, #40E0D0, #ff6b6b);
+            transform: scale(1.1);
+            color: white;
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2), 0 0 15px rgba(64, 224, 208, 0.4);
+        }
+        .question-box input[type="radio"] {
+            margin-right: 12px;
+            display: none;
+        }
+        #progressBubble {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #fff5e6;
+            color: #ff9f43;
+            padding: 18px;
+            border-radius: 50%;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2), 0 0 10px rgba(255, 159, 67, 0.3);
+            border: 3px solid #ff6b6b;
+            font-family: 'Roboto', sans-serif;
+        }
+        #result {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #fff5e6, #ffebee);
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 0 30px rgba(255, 107, 107, 0.4);
+            max-width: 650px;
+            color: #2c3e50;
+            border: 3px solid #8e44ad;
+        }
+        #result h2 {
+            color: #ff9f43;
+            font-size: 36px;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-shadow: 2px 2px 5px rgba(255, 159, 67, 0.3);
+            background: linear-gradient(45deg, #ff6b6b, #8e44ad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        #result p {
+            font-size: 24px;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(45deg, #98FF98, #ff9f43);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .star-dot {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: #ffffff;
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: floatStars 6s infinite ease-in-out;
+        }
+        @keyframes floatStars {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.7; }
+            50% { transform: translateY(-30px) translateX(20px); opacity: 0.9; }
+        }
+    </style>
+    <!-- Google Fonts for Lora and Roboto -->
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script>
+        // Replace this with your Firebase configuration from the Firebase Console
+        const firebaseConfig = {
+            apiKey: "your-api-key",
+            authDomain: "your-auth-domain",
+            projectId: "your-project-id",
+            storageBucket: "your-storage-bucket",
+            messagingSenderId: "your-sender-id",
+            appId: "your-app-id"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+</head>
+<body>
+    <div id="quizContainer"></div>
+    <div id="progressBubble">0/15</div>
+    <div id="result"></div>
+
+    <!-- Starry dots for cosmic effect -->
+    <div class="star-dot" style="top: 10%; left: 15%; animation-delay: 0s;"></div>
+    <div class="star-dot" style="top: 20%; right: 20%; animation-delay: 1s;"></div>
+    <div class="star-dot" style="top: 30%; left: 25%; animation-delay: 2s;"></div>
+    <div class="star-dot" style="bottom: 20%; right: 15%; animation-delay: 3s;"></div>
+    <div class="star-dot" style="bottom: 10%; left: 10%; animation-delay: 4s;"></div>
+
+    <script>
+        const questions = [
+            {
+                question: "How would you rate your overall mood lately?",
+                options: ["Very Positive", "Somewhat Positive", "Neutral", "Somewhat Negative", "Very Negative"],
+                values: [5, 4, 3, 2, 1]
+            },
+            {
+                question: "How often do you feel energized and motivated during the day?",
+                options: ["Always", "Often", "Sometimes", "Rarely", "Never"],
+                values: [5, 4, 3, 2, 1]
+            },
+            {
+                question: "How well do you handle unexpected challenges?",
+                options: ["Very Well", "Fairly Well", "Okay", "Not Well", "Poorly"],
+                values: [5, 4, 3, 2, 1]
+            },
+            {
+                question: "How often do you feel overwhelmed by your responsibilities?",
+                options: ["Never", "Rarely", "Sometimes", "Often", "Always"],
+                values: [5, 4, 3, 2, 1]
+            },
+            {
+                question: "How connected do you feel to the people around you?",
+                options: ["Very Connected", "Somewhat Connected", "Neutral", "Somewhat Disconnected", "Very Disconnected"],
+                values: [5, 4, 3, 2, 1]
+            },
+            {
+                question: "How often do you take time for activities you enjoy?",
+                options: ["Daily", "A Few Times a Week", "Once a Week", "Rarely", "Never"],
+                values: [5, 4, 3, 2, 1]
+            },
+            {
+                question: "How would you rate your ability to relax when stressed?",
+                options: ["Excellent", "Good", "Average", "Poor", "Very Poor"],
+                values: [5, 4, 3, 2, 1]
+            },
+            {
+                question: "How often do you feel hopeful about the future?",
+                options: ["Always", "Often", "Sometimes", "Rarely", "Never"],
+                values: [5, 4, 3, 2, 1]
+            },
+            {
+                question: "How comfortable are you asking for help when you need it?",
+                options: ["Very Comfortable", "Somewhat Comfortable", "Neutral", "Somewhat Uncomfortable", "Very Uncomfortable"],
+                values: [5, 4, 3, 2, 1]
+            },
+            {
+                question: "How often do you feel in control of your emotions?",
+                options: ["Always", "Often", "Sometimes", "Rarely", "Never"],
+                values: [5, 4, 3, 2, 1]
+            },
+            {
+                question: "How would you rate your sleep quality?",
+                options: ["Excellent", "Good", "Average", "Poor", "Very Poor"],
+                values: [5, 4, 3, 2, 1]
+            },
+            {
+                question: "How often do you feel anxious or worried?",
+                options: ["Never", "Rarely", "Sometimes", "Often", "Always"],
+                values: [5, 4, 3, 2, 1]
+            },
+            {
+                question: "How confident are you in pursuing your goals?",
+                options: ["Very Confident", "Somewhat Confident", "Neutral", "Somewhat Doubtful", "Not Confident"],
+                values: [5, 4, 3, 2, 1]
+            },
+            {
+                question: "How often do you feel proud of your accomplishments?",
+                options: ["Always", "Often", "Sometimes", "Rarely", "Never"],
+                values: [5, 4, 3, 2, 1]
+            },
+            {
+                question: "How do you feel about your current work/study-life balance?",
+                options: ["Very Satisfied", "Somewhat Satisfied", "Neutral", "Somewhat Dissatisfied", "Very Dissatisfied"],
+                values: [5, 4, 3, 2, 1]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let totalScore = 0;
+        const quizContainer = document.getElementById('quizContainer');
+        const progressBubble = document.getElementById('progressBubble');
+        const resultDiv = document.getElementById('result');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            showQuestion(0);
+        });
+
+        function showQuestion(index) {
+            const questionData = questions[index];
+            const questionBox = document.createElement('div');
+            questionBox.classList.add('question-box');
+            questionBox.innerHTML = `
+                <h2>${questionData.question}</h2>
+                ${questionData.options.map((option, i) => `
+                    <label>
+                        <input type="radio" name="q${index}" value="${questionData.values[i]}" required>
+                        ${option}
+                    </label>
+                `).join('')}
+            `;
+            quizContainer.appendChild(questionBox);
+
+            setTimeout(() => questionBox.classList.add('active'), 10);
+
+            questionBox.addEventListener('change', () => {
+                const selected = questionBox.querySelector(`input[name="q${index}"]:checked`);
+                totalScore += parseInt(selected.value);
+                questionBox.style.transform = 'translateX(-120%)';
+                setTimeout(() => {
+                    questionBox.remove();
+                    currentQuestion++;
+                    progressBubble.textContent = `${currentQuestion}/${questions.length}`;
+                    if (currentQuestion < questions.length) {
+                        showQuestion(currentQuestion);
+                    } else {
+                        showResult();
+                    }
+                }, 500);
+            });
+        }
+
+        function showResult() {
+            const percentage = (totalScore / 75) * 100;
+            let resultText = '';
+
+            if (percentage >= 85) {
+                resultText = `
+                    <h2>Congratulations! Your Score: ${percentage.toFixed(1)}%</h2>
+                    <p>- You're as sharp as an F1 driver - focused, sharp, quick, and amazing reflexes!<br>
+                    - Your mental agility is on par with a chess grandmaster - strategic and unbeatable!<br>
+                    - You're a mental ninja - swift, silent, and deadly accurate!</p>`;
+            } else if (percentage >= 70) {
+                resultText = `
+                    <h2>Great Job! Your Score: ${percentage.toFixed(1)}%</h2>
+                    <p>- You're a Formula 3 driver - fast, agile, and ready to take on the big leagues!<br>
+                    - Your mental reflexes are as quick as a professional gamer - sharp and on point!<br>
+                    - You're a master puzzle solver - clever, resourceful, and always up for a challenge!</p>`;
+            } else if (percentage >= 60) {
+                resultText = `
+                    <h2>Nice Work! Your Score: ${percentage.toFixed(1)}%</h2>
+                    <p>- You're a skilled rally driver - navigating twists and turns with ease!<br>
+                    - Your mental clarity is as clear as a mountain stream - refreshing and rejuvenating!<br>
+                    - You're a clever detective - piecing together clues and solving mysteries!</p>`;
+            } else if (percentage >= 50) {
+                resultText = `
+                    <h2>Good Effort! Your Score: ${percentage.toFixed(1)}%</h2>
+                    <p>- You're a talented karting driver - speedy, agile, and full of potential!<br>
+                    - Your mental flexibility is as adaptable as a chameleon - changing colors to suit the situation!<br>
+                    - You're a resourceful MacGyver - fixing problems with creativity and ingenuity!</p>`;
+            } else if (percentage >= 40) {
+                resultText = `
+                    <h2>You're on Your Way! Your Score: ${percentage.toFixed(1)}%</h2>
+                    <p>- You're a novice driver - getting familiar with the roads and learning to navigate!<br>
+                    - Your mental clarity is as foggy as a misty morning - but the sun is rising!<br>
+                    - You're a curious apprentice - learning new skills and absorbing knowledge like a sponge!</p>`;
+            } else {
+                resultText = `
+                    <h2>Keep Going! Your Score: ${percentage.toFixed(1)}%</h2>
+                    <p>- You're a rookie driver - just starting out and getting comfortable behind the wheel!<br>
+                    - Your mental clarity is as cloudy as a stormy sky - but the sun will shine through soon!<br>
+                    - You're a fresh student - beginning your journey and eager to learn and grow!</p>`;
+            }
+
+            resultDiv.innerHTML = resultText;
+            resultDiv.style.display = 'block';
+            launchConfetti();
+
+            // Save the score to Firestore
+            db.collection("quiz_results").add({
+                score: percentage,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                date: new Date().toISOString()
+            })
+            .then(() => console.log("Score saved successfully!"))
+            .catch((error) => console.error("Error saving score: ", error));
+        }
+
+        function launchConfetti() {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#ff9f43', '#ff6b6b', '#8e44ad', '#98FF98']
+            });
+            setTimeout(() => {
+                confetti({
+                    particleCount: 50,
+                    spread: 90,
+                    origin: { y: 0.8 },
+                    colors: ['#ff9e7d', '#40E0D0']
+                });
+            }, 500);
+        }
+    </script>
+</body>
+</html>
