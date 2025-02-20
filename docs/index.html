@@ -153,24 +153,29 @@
     </style>
     <!-- Google Fonts for Lora and Roboto -->
     <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
     <!-- Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <script>
-        // Replace this with your Firebase configuration from the Firebase Console
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+        // import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-analytics.js"; // Optional, commented out
+
+        // Your web app's Firebase configuration (provided by you)
         const firebaseConfig = {
-            apiKey: "your-api-key",
-            authDomain: "your-auth-domain",
-            projectId: "your-project-id",
-            storageBucket: "your-storage-bucket",
-            messagingSenderId: "your-sender-id",
-            appId: "your-app-id"
+            apiKey: "AIzaSyDEvPdRFkSPz1NzYmdJPO-hIvWdbgxXtto",
+            authDomain: "mentalhealthquiz.firebaseapp.com",
+            projectId: "mentalhealthquiz",
+            storageBucket: "mentalhealthquiz.firebasestorage.app",
+            messagingSenderId: "798149910665",
+            appId: "1:798149910665:web:c08737ea9a60e3f9072658",
+            measurementId: "G-NL3ENCZCBV"
         };
+
         // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        // const analytics = getAnalytics(app); // Optional, uncomment if you want analytics
     </script>
 </head>
 <body>
@@ -185,7 +190,7 @@
     <div class="star-dot" style="bottom: 20%; right: 15%; animation-delay: 3s;"></div>
     <div class="star-dot" style="bottom: 10%; left: 10%; animation-delay: 4s;"></div>
 
-    <script>
+    <script type="module">
         const questions = [
             {
                 question: "How would you rate your overall mood lately?",
